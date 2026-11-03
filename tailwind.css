@@ -1,0 +1,35 @@
+@import "tailwindcss" source(".") important;
+
+@theme {
+	/* PW brand colors */
+	--color-pw-bg: #f4f8fb;
+	--color-pw-heading: #182b39;
+	--color-pw-text: #234257;
+	--color-pw-primary: #32739b;
+	--color-pw-primary-light: #428cb5;
+	--color-pw-highlight: #e7f0f7;
+	--color-pw-highlight-deep: #d4e6f2;
+	--color-pw-border: #cae0ed;
+	--color-pw-muted: #6c757d;
+
+	/* ECHOLOT brand colors */
+	--color-echo-bg: #ffffff;
+	--color-echo-heading: #1764FF;
+	--color-echo-subheading: #124E88;
+	--color-echo-text: #272727;
+	--color-echo-accent: #1764FF;
+	--color-echo-muted: #888888;
+
+	/* Bento dark cells */
+	--color-bento-dark: #1a3347;
+	--color-bento-dark-light: #234257;
+	--color-bento-dark-accent: #295b7b;
+	--color-bento-dark-text: #66a7ca;
+	--color-bento-dark-muted: #9bc5de;
+	--color-bento-dark-border: #2d5a75;
+
+	/* Bento accent cells */
+	--color-bento-accent: #32739b;
+	--color-bento-accent-light: #428cb5;
+	--color-bento-accent-border: #4a9cc0;
+}

@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Introducing NeoWiki: Modern Structured Data for MediaWiki</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/reset.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/reveal.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/theme/white.css" id="theme">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/plugin/highlight/github.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+	<link rel="stylesheet" href="dist/tailwind.css">
+	<style>
+		@font-face {
+			font-family: 'Geist Variable';
+			src: url('fonts/geist-latin-wght-normal.woff2') format('woff2');
+			font-weight: 100 900;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Outfit';
+			src: url('fonts/outfit-latin-400-normal.woff2') format('woff2');
+			font-weight: 400;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Outfit';
+			src: url('fonts/outfit-latin-700-normal.woff2') format('woff2');
+			font-weight: 700;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Bitter';
+			src: url('fonts/bitter-latin-400-normal.woff2') format('woff2');
+			font-weight: 400;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Bitter';
+			src: url('fonts/bitter-latin-700-normal.woff2') format('woff2');
+			font-weight: 700;
+			font-display: swap;
+		}
+		/* ── Design tokens ── */
+		:root {
+			--slide-bg: #f4f8fb;
+			--slide-heading: #182b39;
+			--slide-text: #234257;
+			--slide-accent: #32739b;
+			--slide-accent-light: #428cb5;
+			--slide-muted: #6c757d;
+			--slide-highlight-bg: #e7f0f7;
+			--slide-border: #cae0ed;
+			--slide-font: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+			--slide-font-heading: var(--slide-font);
+			--slide-font-body: var(--slide-font);
+			/* reveal.js integration */
+			--r-main-font-size: 32px;
+			--r-main-color: var(--slide-text);
+			--r-heading-color: var(--slide-heading);
+			--r-link-color: var(--slide-accent);
+			--r-link-color-hover: var(--slide-accent-light);
+			--r-background-color: var(--slide-bg);
+		}
+
+		/* ── ECHOLOT token overrides ── */
+		.reveal .slides section[data-bernhard] {
+			--slide-bg: #ffffff;
+			--slide-heading: #1764FF;
+			--slide-text: #272727;
+			--slide-accent: #1764FF;
+			--slide-accent-light: #124E88;
+			--slide-muted: #888888;
+			--slide-highlight-bg: rgba(23, 100, 255, 0.08);
+			--slide-border: rgba(23, 100, 255, 0.25);
+			--slide-font-heading: 'Outfit', sans-serif;
+			--slide-font-body: 'Bitter', serif;
+		}
+
+		/* ── Base ── */
+		.reveal {
+			font-family: var(--slide-font);
+		}
+		.reveal .slides section {
+			padding-bottom: 40px;
+		}
+
+		/* ── Typography ── */
+		.reveal h1, .reveal h2, .reveal h3 {
+			text-transform: none;
+			font-family: var(--slide-font-heading);
+			color: var(--slide-heading);
+			letter-spacing: -0.035em;
+		}
+		.reveal h1 { font-weight: 800; }
+		.reveal h2 { font-weight: 700; }
+		.reveal .slides section[data-bernhard] p,
+		.reveal .slides section[data-bernhard] li {
+			font-family: var(--slide-font-body);
+		}
+
+		/* ── Utility classes ── */
+		.reveal .meta {
+			color: var(--slide-muted);
+		}
+		.reveal .secondary {
+			color: var(--slide-muted);
+		}
+		.reveal .accent {
+			color: var(--slide-accent);
+		}
+		.reveal .brand-label {
+			color: var(--slide-accent);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+		}
+		.reveal a {
+			color: var(--slide-accent);
+		}
+		.reveal .icon {
+			color: var(--slide-accent);
+			width: 1.5em;
+			display: inline-block;
+			text-align: center;
+		}
+		.reveal .social-links a {
+			color: var(--slide-text);
+		}
+		.reveal .social-links .icon {
+			color: var(--slide-accent);
+		}
+
+		/* ── Lists ── */
+		.reveal ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		.reveal ul li {
+			margin-bottom: 0.55em;
+			padding-left: 1.4em;
+			position: relative;
+			line-height: 1.35;
+			font-weight: 500;
+		}
+		.reveal ul li::before {
+			content: "\25B8";
+			color: var(--slide-accent);
+			position: absolute;
+			left: 0;
+			font-weight: 900;
+		}
+
+		/* ── Components ── */
+		.reveal .pill {
+			display: inline-block;
+			background: var(--slide-highlight-bg);
+			border: 1px solid var(--slide-border);
+			border-radius: 20px;
+			padding: 0.25em 0.7em;
+			margin: 0.15em;
+			font-size: 0.7em;
+		}
+
+		/* ── Layout helpers ── */
+		.reveal .bs-bullets li::before {
+			content: "";
+			background: url('bluespice-icon.webp') no-repeat center center;
+			background-size: contain;
+			width: 0.8em;
+			height: 0.8em;
+			display: inline-block;
+			position: absolute;
+			left: 0;
+			top: 0.25em;
+		}
+
+		/* ── Title slide ── */
+		.reveal .title-slide {
+			text-align: left;
+		}
+		.reveal .title-slide::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 6px;
+			background: linear-gradient(90deg, var(--slide-accent) 0%, var(--slide-accent-light) 50%, var(--slide-accent) 100%);
+		}
+		.reveal .title-slide .title-meta-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			width: 100%;
+			padding-top: 0.8em;
+			border-top: 1px solid var(--slide-border);
+		}
+		.reveal .pill-label {
+			font-size: 0.4em;
+			font-weight: 600;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+			color: var(--slide-accent);
+			background: var(--slide-highlight-bg);
+			display: inline-block;
+			padding: 0.2em 0.6em;
+			border-radius: 4px;
+		}
+
+		/* ── Slide-specific ── */
+		.reveal .demo-slide {
+			background: radial-gradient(ellipse at center, rgba(50,115,155,0.08) 0%, transparent 70%);
+		}
+		/* ── Logo overlays ── */
+		#pw-logo-overlay {
+			position: fixed;
+			bottom: 12px;
+			left: 16px;
+			z-index: 100;
+			opacity: 0.6;
+		}
+		#pw-logo-overlay img {
+			height: 26px;
+		}
+		#echolot-logo-overlay {
+			position: fixed;
+			bottom: 12px;
+			left: 16px;
+			z-index: 100;
+			opacity: 0.55;
+		}
+		#echolot-logo-overlay img {
+			height: 26px;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="pw-logo-overlay"><img src="pw-logo.svg" alt="Professional Wiki"></div>
+	<div id="echolot-logo-overlay" style="display: none;"><img src="echolot-logo.svg" alt="ECHOLOT"></div>
+	<div class="reveal text-2xl">
+		<div class="slides">
+
+			<!-- ==================== TITLE ==================== -->
+			<section class="title-slide">
+				<div class="pill-label">MUDCon Spring 2026</div>
+				<h1 class="text-7xl font-extrabold mt-4 mb-2">Introducing<br>NeoWiki</h1>
+				<p class="text-3xl text-[color:var(--slide-text)] font-medium tracking-tight">Modern Structured Data for MediaWiki</p>
+				<div class="title-meta-row meta text-lg mt-10">
+					<span>Jeroen De Dauw &amp; Bernhard Krabina</span>
+					<span>MediaWiki Users and Developers Conference</span>
+				</div>
+				<aside class="notes">
+					<p>
+						Hello MUDCon! Hello YouTube!
+					</p>
+
+					<p>
+						You will learn about NeoWiki in this 20 minutes talk. There will be time for questions afterward.
+					</p>
+
+					<p>
+						I am Jeroen De Dauw, CEO of Professional Wiki.
+						And some slides will be presented by Bernhard Krabina from Knowledge Management Associates.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== THE PROBLEM ==================== -->
+			<section>
+				<div class="flex gap-8 items-center text-left">
+					<div class="flex-1">
+						<h2 class="text-7xl font-extrabold">Time for Something New</h2>
+					</div>
+					<div class="flex-1">
+						<ul>
+							<li>SMW is powerful and unique<span class="fragment">, has issues</span></li>
+							<li class="fragment">Usability of Notion, Airtable, etc</li>
+							<li class="fragment">SMW 20 years old, Wikibase ~15</li>
+							<li class="fragment">Many lessons learned</li>
+						</ul>
+					</div>
+				</div>
+				<aside class="notes">
+					<p>
+						Many of you know the power of Semantic MediaWiki. It's a unique software that is highly flexible and
+						can serve many use cases.
+					</p>
+
+					<p>
+						You also know it has some big issues. Despite all its promise, SMW never saw breakthrough success outside the MediaWiki world.
+					</p>
+
+					<p>
+						The competition hasn't stood still, and now highly popular tools like Notion and Airtable blow SMW out of the
+						water when it comes to usability.
+					</p>
+
+					<p>
+						I've been maintaining SMW for over 15 years and created large parts of Wikibase.
+						So I can say with some authority that we've learned many lessons along the way,
+						and that it is time for something new.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== NEOWIKI INTRO ==================== -->
+			<section>
+				<div class="pill-label mb-3">Open-source structured data</div>
+				<h2 class="text-6xl font-bold mb-6">NeoWiki</h2>
+				<div class="grid grid-cols-2 gap-[16px] max-w-[920px] mx-auto text-left">
+					<div class="fragment bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[8px] px-[32px] py-[36px]">
+						<div class="text-[11px] text-pw-muted uppercase tracking-widest">10x better</div>
+						<div class="text-[32px] font-bold text-pw-heading mt-[8px]">Usability</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[8px] px-[32px] py-[36px]">
+						<div class="text-[11px] text-pw-muted uppercase tracking-widest">10x better</div>
+						<div class="text-[32px] font-bold text-pw-heading mt-[8px]">Sustainability</div>
+					</div>
+					<div class="fragment col-span-2 bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[8px] px-[40px] py-[32px]">
+						<div class="text-[11px] text-bento-dark-text uppercase tracking-widest">Philosophy</div>
+						<div class="text-[24px] font-bold text-white mt-[8px]">Focus on value, not features</div>
+					</div>
+				</div>
+
+				<aside class="notes">
+					<p>
+						Introducing NeoWiki, a modern solution for structured data, in the form of an open source MediaWiki extension.
+					</p>
+
+					<p>
+						You get radically better usability, while we achieve step-change improvements in sustainability.
+					</p>
+
+					<p>
+						We are explicitly not aiming for feature parity with prior solutions.
+						You can get 90% of the value from 10% of the features.
+						Thus, we focus on the most common and valuable use cases, giving you a polished and focused experienced.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== SOCIAL PROOF TEASER ==================== -->
+			<section style="padding-bottom: 100px;">
+				<p class="text-2xl text-[color:var(--slide-muted)]">Developed by</p>
+				<div class="text-4xl font-bold text-[color:var(--slide-heading)] mt-2" style="margin-bottom: 3rem;">Professional Wiki</div>
+				<div class="fragment text-center">
+					<p class="text-2xl text-[color:var(--slide-muted)] mb-4">Backed by</p>
+					<div class="text-4xl font-bold text-[color:var(--slide-heading)]">ECHOLOT</div>
+					<div class="text-sm text-[color:var(--slide-muted)] mt-1">EU Cultural Heritage Consortium</div>
+				</div>
+				<div class="fragment text-center mt-8">
+					<div class="text-4xl font-bold text-[color:var(--slide-heading)]">Hallo Welt!</div>
+					<div class="text-sm text-[color:var(--slide-muted)] mt-1">Creators of BlueSpice</div>
+				</div>
+				<aside class="notes">
+					<p>
+						NeoWiki is developed by Professional Wiki and have invested heavily in it ourselves.
+					</p>
+					<p>
+						NeoWiki is also backed by ECHOLOT, an EU cultural heritage consortium. More on that later
+						by Bernhard.
+					</p>
+					<p>
+						Additionally, Hallo Welt will use NeoWiki in the next major version of BlueSpice.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== DEMO ==================== -->
+			<section class="demo-slide">
+				<div class="flex gap-8 items-center text-left">
+					<div class="flex-1">
+						<h2 class="text-8xl font-extrabold tracking-tighter">Demo</h2>
+					</div>
+					<div class="flex-[1.1]">
+						<div class="rounded-[10px] overflow-hidden border border-[color:var(--slide-border)] bg-white/60" style="box-shadow: 0 8px 32px rgba(24,43,57,0.06);">
+							<div class="flex items-center gap-1.5 px-3 py-2 bg-[#f0f4f8] border-b border-[color:var(--slide-border)]">
+								<span class="w-[7px] h-[7px] rounded-full bg-[#ff5f57]"></span>
+								<span class="w-[7px] h-[7px] rounded-full bg-[#febc2e]"></span>
+								<span class="w-[7px] h-[7px] rounded-full bg-[#28c840]"></span>
+								<span class="ml-2 flex-1 bg-white border border-[#dde5ed] rounded px-2 py-0.5 text-[9px] text-[color:var(--slide-muted)]">neowiki.dev</span>
+							</div>
+							<div class="p-4 flex flex-col gap-2 min-h-[160px]">
+								<div class="flex gap-2">
+									<div class="h-[10px] rounded bg-[color:var(--slide-accent)]/15 flex-[2]"></div>
+									<div class="h-[10px] rounded bg-[color:var(--slide-border)] flex-[3]"></div>
+								</div>
+								<div class="flex gap-2">
+									<div class="h-[10px] rounded bg-[color:var(--slide-border)] flex-[4]"></div>
+									<div class="h-[10px] rounded bg-[color:var(--slide-border)] flex-[1]"></div>
+								</div>
+								<div class="grid grid-cols-3 gap-1.5 mt-1">
+									<div class="h-[52px] rounded bg-[color:var(--slide-highlight-bg)] border border-[color:var(--slide-border)]"></div>
+									<div class="h-[52px] rounded bg-[color:var(--slide-highlight-bg)] border border-[color:var(--slide-border)]"></div>
+									<div class="h-[52px] rounded bg-[color:var(--slide-highlight-bg)] border border-[color:var(--slide-border)]"></div>
+								</div>
+								<div class="flex gap-2">
+									<div class="h-[10px] rounded bg-[color:var(--slide-border)] flex-[3]"></div>
+									<div class="h-[10px] rounded bg-[color:var(--slide-accent)]/15 flex-[2]"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<aside class="notes">
+					<p>Show Subject: Professional Wiki, add pro.wiki</p>
+					<p>Show Schema page: Company, edit</p>
+					<p>Show schema edit via Infobox</p>
+					<p>Creation flow: MUDCon + Conference schema</p>
+					<p>Graph view, queries</p>
+					<p>Musée d'Orsay: Multi-Subject, statement/qualifiers</p>
+				</aside>
+			</section>
+
+			<!-- ==================== BERNHARD: ECHOLOT SECTION ==================== -->
+			<section data-bernhard data-background-color="#ffffff">
+				<img src="echolot-logo-text.svg" alt="ECHOLOT" class="h-[70px] mb-2 block mx-auto">
+				<p class="text-2xl mb-5">
+					<span class="accent">E</span>uropean
+					<span class="accent">C</span>ultural
+					<span class="accent">H</span>eritage:
+					<span class="accent">O</span>ptimized
+					<span class="accent">L</span>inked
+					<span class="accent">O</span>pen
+					<span class="accent">T</span>ools
+				</p>
+				<div class="grid grid-cols-2 gap-[14px] max-w-[680px] mx-auto text-left" style="margin-top: 24px;">
+					<div class="bg-[rgba(23,100,255,0.04)] border border-[rgba(23,100,255,0.12)] rounded-[8px] px-[20px] py-[20px]">
+						<div class="text-[11px] font-semibold uppercase tracking-widest text-[#1764FF] mb-2">Mission</div>
+						<p class="text-base text-[#272727] leading-relaxed"><strong>Creation, reuse, and dissemination</strong> of high-quality, semantically rich cultural heritage data accessible to scholars and institutions of any size.</p>
+					</div>
+					<div class="bg-[rgba(23,100,255,0.04)] border border-[rgba(23,100,255,0.12)] rounded-[8px] px-[20px] py-[20px]">
+						<div class="text-[11px] font-semibold uppercase tracking-widest text-[#1764FF] mb-2">Technology</div>
+						<p class="text-base text-[#272727] leading-relaxed">Built on <strong>knowledge graphs</strong> and <strong>open-source software</strong> (MediaWiki suite) for FAIR data principles and integration with Europeana, DS4CH, and Wikidata.</p>
+					</div>
+				</div>
+				<div class="flex items-center justify-center gap-3 mt-5">
+					<img src="eu-flag.svg" alt="EU" class="h-[22px] rounded-sm">
+					<span class="meta text-lg">Funded by the European Union</span>
+				</div>
+
+				<aside class="notes">
+					<p>Bernhard's section starts here. Bernhard presents.</p>
+				</aside>
+			</section>
+
+			<section data-bernhard data-background-color="#ffffff">
+				<h2 class="text-5xl font-bold mb-6">Core ECHOLOT System</h2>
+				<div class="grid grid-cols-2 gap-[14px] max-w-[700px] mx-auto text-left text-lg">
+					<div class="bg-[rgba(23,100,255,0.03)] border border-[rgba(23,100,255,0.12)] rounded-[10px] px-[22px] py-[22px]">
+						<div class="text-[11px] font-semibold uppercase tracking-widest text-[#1764FF] mb-2">Base technology</div>
+						<div class="text-xl font-bold text-[#272727] mb-3">MediaWiki</div>
+						<ul>
+							<li>Ready-made collaborative curation UI</li>
+							<li>Extensive library of extensions</li>
+							<li>Dedicated developer community</li>
+						</ul>
+						<div class="text-base text-[#272727] mt-3 pt-3 border-t border-[rgba(23,100,255,0.12)] leading-relaxed">
+							<strong class="text-[#1764FF]">Focus:</strong> addressing limitations for cultural heritage, especially structured data and access rights.
+						</div>
+					</div>
+					<div class="fragment bg-[rgba(23,100,255,0.03)] border border-[rgba(23,100,255,0.12)] rounded-[10px] px-[22px] py-[22px]">
+						<div class="text-[11px] font-semibold uppercase tracking-widest text-[#1764FF] mb-2">Built on top</div>
+						<div class="text-xl font-bold text-[#272727] mb-3">Hybrid Curation</div>
+						<ul>
+							<li>Import, export &amp; transformation</li>
+							<li>Data reconciliation</li>
+							<li>Entity linking &amp; enrichment</li>
+							<li>Image recognition &amp; annotation</li>
+							<li>Data quality checks</li>
+						</ul>
+					</div>
+				</div>
+
+				<aside class="notes">
+					<p>Bernhard: Why MediaWiki was chosen. What ECHOLOT will build on top.</p>
+				</aside>
+			</section>
+
+			<section data-bernhard data-background-color="#ffffff">
+				<h2 class="text-5xl font-bold mb-5">Case Studies &amp; Partners</h2>
+				<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6em;">
+					<div class="pill">Basque Cultural Heritage Data</div>
+					<div class="pill">European Literary Bibliography</div>
+					<div class="pill">Connecting Media Arts Collections</div>
+					<div class="pill">Flemish Fine &amp; Performing Arts</div>
+					<div class="pill">Publishing &amp; Roundtripping GLAM Data</div>
+				</div>
+				<p class="text-lg text-[color:var(--slide-muted)]" style="margin-top: 1.5em; margin-bottom: 0.3em;">Participating institutions</p>
+				<div style="display: flex; gap: 1.5em; justify-content: center; font-size: 0.55em;">
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li>ZKM (DE)</li>
+						<li>LI-MA (NL)</li>
+						<li>Grey Area (CR)</li>
+						<li>Computer History Museum (SI)</li>
+						<li>Rhizome (US)</li>
+						<li>Zentrum f&uuml;r Netzkunst (DE)</li>
+						<li>National Library of Czech Republic</li>
+					</ul>
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li>British Library (UK)</li>
+						<li>Wikimedia Sweden</li>
+						<li>KMSKA (BE)</li>
+						<li>M Leuven (BE)</li>
+						<li>MSK Gent (BE)</li>
+						<li>Musea Brugge (BE)</li>
+						<li>Mu.ZEE (BE)</li>
+					</ul>
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li>Opera Ballet Vlaanderen (BE)</li>
+						<li>De Munt (BE)</li>
+						<li>Fundaci&oacute;n Sancho el Sabio (ES)</li>
+						<li>Tabakalera MediaLab (ES)</li>
+						<li>Mus&eacute;e Basque Bayonne (FR)</li>
+						<li>UEU / INGUMA (ES)</li>
+						<li>University of Alicante (ES)</li>
+					</ul>
+				</div>
+				<aside class="notes">
+					<p>
+						Bernhard: Brief overview of case studies and participating
+						institutions. Show breadth, don't go deep.
+					</p>
+				</aside>
+			</section>
+
+			<section data-bernhard data-background-color="#ffffff">
+				<h2 class="text-5xl font-bold mb-1">Consortium Partners</h2>
+				<p class="meta text-lg" style="margin-bottom: 1em;">15 partners across 11 countries</p>
+				<div style="display: flex; gap: 1.5em; justify-content: center; font-size: 0.55em;">
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li><strong>Professional Wiki GmbH (DE)</strong></li>
+						<li><strong>Knowledge Management Associates (AT)</strong></li>
+						<li><strong>TIB (DE)</strong> <span class="meta">— Coordinator</span></li>
+						<li>Europeana Foundation (NL)</li>
+						<li>DARIAH-EU (FR)</li>
+					</ul>
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li>Austrian Academy of Sciences (AT)</li>
+						<li>Czech Academy of Sciences (CZ)</li>
+						<li>Polish Academy of Sciences (PL)</li>
+						<li>Jozef Stefan Institute (SI)</li>
+						<li>University of the Basque Country (ES)</li>
+					</ul>
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li>University of Helsinki (FI)</li>
+						<li>PCSS (PL)</li>
+						<li>meemoo (BE)</li>
+						<li>Australo (EE)</li>
+						<li>takin.solutions (BG)</li>
+					</ul>
+				</div>
+				<h2 class="text-3xl font-bold" style="margin-top: 1.5em;">Follow ECHOLOT</h2>
+				<p style="font-size: 0.6em;">
+					<a href="https://echolot-eccch.eu/" style="color: var(--slide-text);">echolot-eccch.eu</a>
+				</p>
+				<p style="font-size: 0.6em;">
+					<a href="https://www.linkedin.com/company/echolot-project/" style="color: var(--slide-accent);"><i class="fab fa-linkedin"></i></a>
+					<a href="https://www.linkedin.com/company/echolot-project/" style="color: var(--slide-text);"> ECHOLOT Project</a>
+					<span style="display: inline-block; width: 1em;"></span>
+					<a href="https://mastodon.social/@ECHOLOT_Project" style="color: var(--slide-accent);"><i class="fab fa-mastodon"></i></a>
+					<a href="https://mastodon.social/@ECHOLOT_Project" style="color: var(--slide-text);"> @ECHOLOT_Project</a>
+					<span style="display: inline-block; width: 1em;"></span>
+					<a href="https://www.youtube.com/@ECHOLOTProject" style="color: var(--slide-accent);"><i class="fab fa-youtube"></i></a>
+					<a href="https://www.youtube.com/@ECHOLOTProject" style="color: var(--slide-text);"> @ECHOLOTProject</a>
+				</p>
+
+				<aside class="notes">
+					<p>
+						Bernhard: Highlight breadth of consortium. PW and KM-A bolded.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== JEROEN: WRAP-UP ==================== -->
+			<section>
+				<h2 class="text-5xl font-bold mb-4">NeoWiki for <img src="bluespice-logo.png" alt="BlueSpice" class="inline-block h-[1.6em] align-middle ml-0.5" style="margin-bottom: 0.07em;"></h2>
+				<ul class="bs-bullets mt-5">
+					<li>NeoWiki powers BlueSpice Galaxy</li>
+					<div class="fragment">
+						<li>Hallo Welt funds NeoWiki</li>
+						<li>Active collaboration</li>
+					</div>
+				</ul>
+
+				<aside class="notes">
+					<p>
+						NeoWiki will also power the next major version of BlueSpice.
+						BlueSpice is the leading enterprise MediaWiki distribution, developed by our partner Hallo Welt.
+					</p>
+					<p>
+						The current version of BlueSpice uses SMW.
+						Migrating an enterprise solution as comprehensive as BlueSpice away from SMW is no small task.
+						That's why Hallo Welt has invested in NeoWiki. We're now together building the next generation of
+						structured data support for enterprise wikis.
+					</p>
+					<p>
+						If you also want a say in the development direction of NeoWiki,
+						so you can ensure it accommodates your use cases and integrates with your solutions,
+						now is the time to reach out to us.
+					</p>
+				</aside>
+			</section>
+
+			<section>
+				<h2 class="text-5xl font-bold mb-6">NeoWiki Product Vision</h2>
+				<ul>
+					<li>
+						<strong>10x Improvement</strong><br>
+						<span class="text-[color:var(--slide-muted)]" style="font-size: 0.75em;">Radically better UX and sustainability</span>
+					</li>
+					<li class="fragment">
+						<strong>Coherent product</strong><br>
+						<span class="text-[color:var(--slide-muted)]" style="font-size: 0.75em;">Professional Wiki is product owner</span>
+					</li>
+					<li class="fragment">
+						<strong>Open source</strong><br>
+						<span class="text-[color:var(--slide-muted)]" style="font-size: 0.75em;">Build your own extensions on top</span>
+					</li>
+					<li class="fragment">
+						<strong>Designed for AI</strong><br>
+						<span class="text-[color:var(--slide-muted)]" style="font-size: 0.75em;">APIs, well-documented formats, built-in AI capabilities</span>
+					</li>
+				</ul>
+
+				<aside class="notes">
+					<p>
+						Professional Wiki is product owner. We ensure the product stays coherent and that the use cases of our partners are solved well.
+					</p>
+
+					<p>
+						NeoWiki is Open Source and already on GitHub. Website launching soon. Many docs. Extension points for your extensions.
+					</p>
+
+					<p>
+						Naturally, as it's 2026, we are designing NeoWiki with AI in mind. MediaWiki is already an excellent combination with AI,
+						by providing collaboration tools like version history and the ability to revert bad changes or to see what a single
+						AI Agent changed over time. NeoWiki gives you and your Agents additional structure in the form of Schemas and well-documented formats.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== COMPARISON SLIDES ==================== -->
+			<section>
+				<h2 class="text-5xl font-bold mb-6">NeoWiki vs Semantic MediaWiki <img src="smw-logo.svg" alt="SMW" style="display: inline-block; height: 36px; vertical-align: middle; margin-left: 0.3em;"></h2>
+				<div class="grid grid-cols-3 gap-[14px] max-w-[960px] mx-auto text-left">
+					<div class="bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-pw-heading tracking-tight">Native schemas</div>
+						<div class="text-base text-pw-muted mt-[6px]">Types, constraints, and defaults</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-white tracking-tight">Native form-based editing</div>
+						<div class="text-base text-bento-dark-muted mt-[6px]">Derived from schemas</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-pw-heading tracking-tight">Multiple subjects per page</div>
+						<div class="text-base text-pw-muted mt-[6px]">As a native concept</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-white tracking-tight">JSON storage</div>
+						<div class="text-base text-bento-dark-muted mt-[6px]">In revision slots</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-pw-heading tracking-tight">Standard graph DB</div>
+						<div class="text-base text-pw-muted mt-[6px]">And query language</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-white tracking-tight">Modern codebase</div>
+						<div class="text-base text-bento-dark-muted mt-[6px]">Full test coverage</div>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="text-5xl font-bold mb-6">NeoWiki vs Wikibase <img src="wikibase-logo.svg" alt="Wikibase" style="display: inline-block; height: 36px; vertical-align: middle; margin-left: 0.3em;"></h2>
+				<div class="grid grid-cols-3 gap-[14px] max-w-[960px] mx-auto text-left">
+					<div class="bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-pw-heading tracking-tight">Display UIs</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-white tracking-tight">Native schemas</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-pw-heading tracking-tight">Forms</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-white tracking-tight">Property graph model</div>
+					</div>
+					<div class="fragment bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-pw-heading tracking-tight">QLever &nbsp;<span class="text-pw-muted"><s>Blazegraph</s></span></div>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-xl font-bold text-white tracking-tight">Inline queries</div>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="text-5xl font-bold mb-6">NeoWiki vs Bucket</h2>
+				<div class="grid grid-cols-2 gap-[14px] max-w-[960px] mx-auto text-left">
+					<div class="bg-white border border-pw-border rounded-[10px] px-[28px] py-[28px]">
+						<div class="text-[11px] font-semibold uppercase tracking-widest text-pw-muted mb-3">Bucket</div>
+						<ul>
+							<li>Similar philosophy: serve common cases, keep code lean</li>
+							<li class="fragment">Designed for the gaming wiki use cases</li>
+							<li class="fragment">Optimized for power users who write Lua and SQL</li>
+						</ul>
+					</div>
+					<div class="fragment bg-linear-to-br from-bento-dark to-bento-dark-accent border border-bento-dark-border rounded-[10px] px-[24px] py-[24px]">
+						<div class="text-[11px] font-semibold uppercase tracking-widest text-bento-dark-text mb-3">NeoWiki</div>
+						<ul class="[&_li]:text-white [&_li::before]:text-bento-dark-text">
+							<li>High-UX views and forms</li>
+							<li class="fragment">Schemas with validation</li>
+							<li class="fragment">Graph database and queries</li>
+						</ul>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="text-5xl font-bold mb-6">Get Involved</h2>
+				<div style="font-size: 0.8em; text-align: left; max-width: 550px; margin: 0 auto;">
+					<p>
+						<i class="fas fa-globe icon"></i>
+						<a href="https://neowiki.dev">neowiki.dev (demo wiki)</a>
+					</p>
+					<p>
+						<i class="fab fa-github icon"></i>
+						<a href="https://github.com/ProfessionalWiki/NeoWiki">github.com/ProfessionalWiki/NeoWiki</a>
+					</p>
+					<p>
+						<i class="fab fa-mastodon icon"></i>
+						<a href="https://mastodon.social/@NeoWiki">@NeoWiki</a>
+					</p>
+					<p>
+						<i class="fab fa-bluesky icon"></i>
+						<a href="https://bsky.app/profile/neowiki.ai">@neowiki.ai</a>
+					</p>
+					<p>
+						<i class="fab fa-x-twitter icon"></i>
+						<a href="https://x.com/NeoWikiAI">@NeoWikiAI</a>
+					</p>
+				</div>
+				<div style="font-size: 0.6em; margin-top: 2.5em; color: var(--slide-muted);">
+					<p style="margin-bottom: 0.3em;">Professional Wiki</p>
+					<p>
+						<a href="https://professional.wiki" style="color: var(--slide-text);">professional.wiki</a>
+						<span style="display: inline-block; width: 0.8em;"></span>
+						<a href="https://www.linkedin.com/company/professional-wiki/"><i class="fab fa-linkedin icon"></i></a>
+						<a href="https://www.linkedin.com/company/professional-wiki/" style="color: var(--slide-text);"> Professional Wiki</a>
+						<span style="display: inline-block; width: 0.8em;"></span>
+						<a href="https://mastodon.social/@ProWiki"><i class="fab fa-mastodon icon"></i></a>
+						<a href="https://mastodon.social/@ProWiki" style="color: var(--slide-text);"> @ProWiki</a>
+						<span style="display: inline-block; width: 0.8em;"></span>
+						<a href="https://x.com/ProWikis"><i class="fab fa-x-twitter icon"></i></a>
+						<a href="https://x.com/ProWikis" style="color: var(--slide-text);"> @ProWikis</a>
+					</p>
+				</div>
+
+				<aside class="notes">
+					<p>
+						NeoWiki demo live. Also pre-built Docker image.
+					</p>
+
+					<p>
+						NeoWiki is not quite production ready, in the sense that some key features are still missing.
+						Those will be added in the near future, and more announcements will follow.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== Q&A ==================== -->
+			<section>
+				<h2 class="text-8xl font-extrabold tracking-tighter">Q&amp;A</h2>
+				<div class="w-16 h-1 bg-[color:var(--slide-accent-light)] rounded-sm mx-auto mt-5"></div>
+
+				<aside class="notes">
+					<p>Jeroen takes product/technical/roadmap. Bernhard takes ECHOLOT/CH.</p>
+				</aside>
+			</section>
+
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/reveal.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/plugin/notes.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.0/dist/plugin/highlight.js"></script>
+	<script>
+		Reveal.initialize({
+			hash: true,
+			slideNumber: true,
+			center: true,
+			plugins: [ RevealNotes, RevealHighlight ],
+		}).then(() => {
+			const pwLogo = document.getElementById('pw-logo-overlay');
+			const echolotLogo = document.getElementById('echolot-logo-overlay');
+			Reveal.on('slidechanged', event => {
+				const isBernhard = event.currentSlide.hasAttribute('data-bernhard');
+				pwLogo.style.display = isBernhard ? 'none' : '';
+				echolotLogo.style.display = isBernhard ? '' : 'none';
+			});
+		});
+	</script>
+</body>
+</html>
