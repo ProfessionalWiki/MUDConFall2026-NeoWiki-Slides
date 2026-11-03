@@ -1,8 +1,8 @@
-# Introducing NeoWiki: Modern Structured Data for MediaWiki
+# NeoWiki in Action: Modern Structured Data for MediaWiki
 
-Presentation slides for MUDCon Spring 2026 (MediaWiki Users and Developers Conference).
+Presentation slides for MUDCon Fall 2026 (MediaWiki Users and Developers Conference).
 
-**View slides:** https://professionalwiki.github.io/MUDCon2026-NeoWiki-Slides/
+**View slides:** https://professionalwiki.github.io/MUDConFall2026-NeoWiki-Slides/
 
 ## NeoWiki
 
