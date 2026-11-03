@@ -1,13 +1,11 @@
 # NeoWiki in Action: Modern Structured Data for MediaWiki
 
-Presentation slides for MUDCon Fall 2026 (MediaWiki Users and Developers Conference).
+Presentation slides for the NeoWiki presentation by Jeroen De Dauw at [MediaWiki Users and Developers Conference Fall 2026](https://www.semantic-mediawiki.org/wiki/MediaWiki_Users_and_Developers_Conference_Fall_2026).
 
 **View slides:** https://professionalwiki.github.io/MUDConFall2026-NeoWiki-Slides/
 
 ## NeoWiki
 
-* https://professional.wiki/en/neowiki
-* https://github.com/ProfessionalWiki/NeoWiki
-* https://mastodon.social/@NeoWiki
-* https://bsky.app/profile/neowiki.ai
-* https://x.com/NeoWikiAI
+[NeoWiki website](https://neowiki.ai) | [NeoWiki source code](https://github.com/ProfessionalWiki/NeoWiki) | [NeoWiki hosting](https://professional.wiki/en/hosting/neowiki)
+
+[Mastodon](https://mastodon.social/@NeoWiki) | [Bluesky](https://bsky.app/profile/neowiki.ai) | [X / Twitter](https://x.com/NeoWikiAI
