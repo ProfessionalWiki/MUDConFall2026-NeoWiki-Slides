@@ -896,40 +896,100 @@
 				</div>
 
 				<aside class="notes">
-					<p>Show Subject: Professional Wiki, add pro.wiki</p>
-					<p>Show Schema page: Company, edit</p>
-					<p>Show schema edit via Infobox</p>
-					<p>Creation flow: MUDCon + Conference schema</p>
-					<p>Graph view, queries</p>
-					<p>Musée d'Orsay: Multi-Subject, statement/qualifiers</p>
+					<p>Schema:Presentation: add Speakers (relation to Person), Format (select), Duration (number, 5 to 90)</p>
+					<p>Edit NeoWiki in Action: create myself as speaker in place. Duration 300 shows the error before saving. Fix, save</p>
+					<p>History: diff of that edit</p>
+					<p>Demo-data wiki, Museum collection: visitors table, SPARQL in the source. Every save also goes to the graph stores: copies you can rebuild. Click Rijksmuseum</p>
+					<p>Rijksmuseum: text, infobox, attendance. Add 2025</p>
+					<p>[If time] The Milkmaid as EDM</p>
 				</aside>
-			</section>
-
-			<section>
-				<h2 class="text-5xl font-bold mb-6">The wiki is the source of truth</h2>
-				<img src="architecture.svg" alt="The wiki page is the source of truth; every save updates the native and EDM projections in Neo4j and a SPARQL store, which parser functions, Lua and the REST API query" class="diagram">
 			</section>
 
 			<!-- ==================== 6 AI ==================== -->
 			<section>
 				<h2 class="text-6xl font-bold">Built with AI in mind</h2>
+				<p class="fragment text-3xl meta mt-6"><span class="font-semibold text-[color:var(--slide-text)]">Let AI Work With Your Wiki</span> · Thursday 15:10</p>
 				<aside class="notes">
 					<p>
-						MediaWiki is already an excellent combination with AI, by providing collaboration tools like version history
-						and the ability to revert bad changes or to see what a single AI agent changed over time.
-						NeoWiki gives you and your agents additional structure in the form of schemas and well-documented formats.
+						MediaWiki is built for editors you don't fully trust. You can see who edited what and when. And you can undo changes,
+						including in bulk.
+					</p>
+					<p>
+						So MediaWiki is a natural fit for AI agents.
+					</p>
+					<p>
+						NeoWiki gives you and your agents additional structure via well-documented formats and validation of the constraints
+						that you defined in your schemas.
+					</p>
+					<p>
+						There is also an MCP server. [Click] You'll get to see NeoWiki plus AI in action in my talk tomorrow afternoon.
 					</p>
 				</aside>
 			</section>
 
 			<!-- ==================== 7 LOOKING AHEAD ==================== -->
 			<section>
-				<h2 class="text-6xl font-bold">Looking ahead</h2>
+				<h2 class="text-5xl font-bold mb-6">Looking ahead</h2>
+				<div class="max-w-[880px] mx-auto text-left flex flex-col gap-[14px]">
+					<div class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted">Planned</div>
+					<div class="grid grid-cols-2 gap-[14px]">
+						<div class="bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[22px]">
+							<div class="text-xl font-bold text-pw-heading tracking-tight">Import tools</div>
+							<div class="text-base text-pw-muted mt-[6px]">Including bulk import</div>
+						</div>
+						<div class="bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[22px]">
+							<div class="text-xl font-bold text-pw-heading tracking-tight">Query visualizations</div>
+							<div class="text-base text-pw-muted mt-[6px]">Tables, maps, charts, timelines, ...</div>
+						</div>
+						<div class="bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[22px]">
+							<div class="text-xl font-bold text-pw-heading tracking-tight">Advanced dates</div>
+							<div class="text-base text-pw-muted mt-[6px]">EDTF: uncertain, partial, ranges</div>
+						</div>
+						<div class="bg-linear-to-br from-pw-highlight to-pw-highlight-deep border border-pw-border rounded-[10px] px-[28px] py-[22px]">
+							<div class="text-xl font-bold text-pw-heading tracking-tight">More property types</div>
+							<div class="text-base text-pw-muted mt-[6px]">Images, locations, external concepts, ...</div>
+						</div>
+					</div>
+					<div class="fragment flex flex-col gap-[14px]">
+						<div class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted mt-[6px]">Possible on today’s foundation</div>
+						<div class="grid grid-cols-2 gap-[14px]">
+							<div class="bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[22px]">
+								<div class="text-xl font-bold text-white tracking-tight">SMW and Wikibase data</div>
+								<div class="text-base text-bento-dark-muted mt-[6px]">Queried and visualized in NeoWiki</div>
+							</div>
+							<div class="bg-linear-to-br from-bento-dark to-bento-dark-light border border-bento-dark-border rounded-[10px] px-[28px] py-[22px]">
+								<div class="text-xl font-bold text-white tracking-tight">Edit values in query results</div>
+								<div class="text-base text-bento-dark-muted mt-[6px]">Requested for about 20 years</div>
+							</div>
+						</div>
+					</div>
+					<div class="fragment flex items-baseline gap-[14px] border-t border-pw-border pt-[12px] mt-[6px]">
+						<span class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted whitespace-nowrap">Built on top</span>
+						<span class="text-[17px] meta leading-snug">ECHOLOT: ready-made schema and mapping bundles, reconciliation and enrichment</span>
+					</div>
+				</div>
+				<aside class="notes">
+					<p>Planned, no dates.</p>
+					<p>Visualizations: inspired by SMW's result formats. Until then, build your own with Lua.</p>
+					<p>[Click] Possible, but not planned yet. A Wikibase next to NeoWiki could even be edited through NeoWiki's forms.</p>
+					<p>[Click] Others build on top of NeoWiki too.</p>
+					<p>Missing your top wish? Tell us. We prioritize what is most needed.</p>
+				</aside>
 			</section>
 
 			<!-- ==================== 8 CREDITS ==================== -->
 			<section>
-				<h2 class="text-6xl font-bold">Credits</h2>
+				<h2 class="text-5xl font-bold mb-8">Credits</h2>
+				<dl class="max-w-[840px] mx-auto text-left grid grid-cols-[170px_1fr] gap-x-[28px] gap-y-[22px] items-baseline">
+					<dt class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted">Built by</dt>
+					<dd class="text-[24px] leading-snug text-balance m-0"><strong class="text-pw-heading">Morne&nbsp;Alberts, Alistair&nbsp;Kim, Karsten&nbsp;Hoffmeyer and Jeroen&nbsp;De&nbsp;Dauw</strong>, with everyone who contributed on GitHub</dd>
+					<dt class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted">Thanks to</dt>
+					<dd class="text-[24px] leading-snug text-balance m-0">Our ECHOLOT partners, Hallo&nbsp;Welt! and everyone who tested early versions</dd>
+					<dt class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted">Special thanks</dt>
+					<dd class="text-[24px] leading-snug text-balance m-0"><strong class="text-pw-heading">Lozana&nbsp;Rossenova</strong> and <strong class="text-pw-heading">George&nbsp;Bruseker</strong></dd>
+					<dt class="text-[13px] font-semibold uppercase tracking-widest text-pw-muted">Foundations</dt>
+					<dd class="text-[24px] leading-snug text-balance m-0">The SMW and Wikibase communities, especially <strong class="text-pw-heading">Markus&nbsp;Krötzsch</strong>, <strong class="text-pw-heading">Denny&nbsp;Vrandečić</strong> and <strong class="text-pw-heading">Yaron&nbsp;Koren</strong></dd>
+				</dl>
 			</section>
 
 			<!-- ==================== 9 COMPARISONS, AS TIME ALLOWS ==================== -->
@@ -1119,6 +1179,10 @@
 						Relations, dates, ...: also multilingual text.
 					</p>
 				</aside>
+			</section>
+
+			<section>
+				<img src="architecture.svg" alt="The wiki page is the source of truth; every save updates the native and EDM projections in Neo4j and a SPARQL store, which parser functions, Lua and the REST API query" class="diagram" style="width: 960px; max-width: 100%; max-height: 640px;">
 			</section>
 
 
