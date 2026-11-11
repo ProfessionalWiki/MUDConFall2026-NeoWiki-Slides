@@ -222,6 +222,7 @@
 		.reveal .demo-slide .browser img {
 			display: block;
 			width: 100%;
+			max-width: 100%;
 			max-height: none;
 			margin: 0;
 		}
@@ -990,7 +991,97 @@
 				</dl>
 			</section>
 
-			<!-- ==================== 9 COMPARISONS, AS TIME ALLOWS ==================== -->
+			<!-- ==================== 9 NEOWIKI.AI ==================== -->
+			<section class="demo-slide">
+				<div class="flex gap-12 items-center text-left">
+					<div style="flex: 1;">
+						<h2 class="text-8xl font-extrabold tracking-tighter">neowiki.ai</h2>
+					</div>
+					<div style="flex: 1.3;">
+						<div class="browser">
+							<div class="browser-bar">
+								<span class="browser-dot" style="background: #ff5f57;"></span>
+								<span class="browser-dot" style="background: #febc2e;"></span>
+								<span class="browser-dot" style="background: #28c840;"></span>
+								<span class="browser-url"></span>
+							</div>
+							<img src="neowiki-ai.png" alt="The neowiki.ai homepage: Make your knowledge governable, queryable, and AI-ready">
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ==================== 10 Q&A, THEN RESOURCES TO SWITCH TO ==================== -->
+			<section>
+				<h2 class="text-8xl font-extrabold tracking-tighter">Q&amp;A</h2>
+				<div class="w-16 h-1 bg-[color:var(--slide-accent-light)] rounded-sm mx-auto mt-5"></div>
+
+				<aside class="notes">
+					<p>Jeroen takes product/technical/roadmap. Bernhard takes ECHOLOT/CH.</p>
+				</aside>
+			</section>
+
+			<section>
+				<h2 class="text-5xl font-bold mb-6">Get Involved</h2>
+				<div style="font-size: 0.8em; text-align: left; max-width: 550px; margin: 0 auto;">
+					<p>
+						<i class="fas fa-globe icon"></i>
+						<a href="https://neowiki.ai">neowiki.ai</a>
+					</p>
+					<p>
+						<i class="fas fa-flask icon"></i>
+						<a href="https://neowiki.dev">neowiki.dev (demo wiki)</a>
+					</p>
+					<p>
+						<i class="fab fa-github icon"></i>
+						<a href="https://github.com/ProfessionalWiki/NeoWiki">github.com/ProfessionalWiki/NeoWiki</a>
+					</p>
+					<p>
+						<i class="fab fa-mastodon icon"></i>
+						<a href="https://mastodon.social/@NeoWiki">@NeoWiki</a>
+					</p>
+					<p>
+						<i class="fab fa-bluesky icon"></i>
+						<a href="https://bsky.app/profile/neowiki.ai">@neowiki.ai</a>
+					</p>
+					<p>
+						<i class="fab fa-x-twitter icon"></i>
+						<a href="https://x.com/NeoWikiAI">@NeoWikiAI</a>
+					</p>
+				</div>
+				<div style="font-size: 0.6em; margin-top: 2.5em; color: var(--slide-muted);">
+					<p style="margin-bottom: 0.3em;">Professional Wiki</p>
+					<p>
+						<a href="https://professional.wiki" style="color: var(--slide-text);">professional.wiki</a>
+						<span style="display: inline-block; width: 0.8em;"></span>
+						<a href="https://www.linkedin.com/company/professional-wiki/"><i class="fab fa-linkedin icon"></i></a>
+						<a href="https://www.linkedin.com/company/professional-wiki/" style="color: var(--slide-text);"> Professional Wiki</a>
+						<span style="display: inline-block; width: 0.8em;"></span>
+						<a href="https://mastodon.social/@ProWiki"><i class="fab fa-mastodon icon"></i></a>
+						<a href="https://mastodon.social/@ProWiki" style="color: var(--slide-text);"> @ProWiki</a>
+						<span style="display: inline-block; width: 0.8em;"></span>
+						<a href="https://bsky.app/profile/professional.wiki"><i class="fab fa-bluesky icon"></i></a>
+						<a href="https://bsky.app/profile/professional.wiki" style="color: var(--slide-text);"> @professional.wiki</a>
+					</p>
+				</div>
+
+				<aside class="notes">
+					<p>
+						Try it on neowiki.dev: create an account and confirm your email to edit. It is a sandbox that resets periodically.
+					</p>
+
+					<p>
+						To run it yourself, install it with Docker or add it to an existing MediaWiki, 1.43 or later.
+						It is still a beta, so not for critical production systems yet.
+					</p>
+
+					<p>
+						If you would rather not run it yourself, we can host a pilot for you.
+					</p>
+				</aside>
+			</section>
+
+			<!-- ==================== BACKUP SLIDES ==================== -->
 			<section>
 				<h2 class="text-5xl font-bold mb-6"><img src="neowiki-icon.svg" alt="NeoWiki" style="display: inline-block; height: 36px; vertical-align: middle; margin-right: 0.3em;">NeoWiki vs Semantic MediaWiki<img src="smw-logo.svg" alt="SMW" style="display: inline-block; height: 36px; vertical-align: middle; margin-left: 0.3em;"></h2>
 				<div class="grid grid-cols-3 gap-[14px] max-w-[960px] mx-auto text-left">
@@ -1078,77 +1169,6 @@
 				<img src="qualifiers-and-references.svg" alt="A Wikibase statement with a qualifier and a reference, modelled in NeoWiki as a related subject with Year, Visitors and Source" class="diagram">
 			</section>
 
-			<!-- ==================== 10 Q&A, THEN RESOURCES TO SWITCH TO ==================== -->
-			<section>
-				<h2 class="text-8xl font-extrabold tracking-tighter">Q&amp;A</h2>
-				<div class="w-16 h-1 bg-[color:var(--slide-accent-light)] rounded-sm mx-auto mt-5"></div>
-
-				<aside class="notes">
-					<p>Jeroen takes product/technical/roadmap. Bernhard takes ECHOLOT/CH.</p>
-				</aside>
-			</section>
-
-			<section>
-				<h2 class="text-5xl font-bold mb-6">Get Involved</h2>
-				<div style="font-size: 0.8em; text-align: left; max-width: 550px; margin: 0 auto;">
-					<p>
-						<i class="fas fa-globe icon"></i>
-						<a href="https://neowiki.ai">neowiki.ai</a>
-					</p>
-					<p>
-						<i class="fas fa-flask icon"></i>
-						<a href="https://neowiki.dev">neowiki.dev (demo wiki)</a>
-					</p>
-					<p>
-						<i class="fab fa-github icon"></i>
-						<a href="https://github.com/ProfessionalWiki/NeoWiki">github.com/ProfessionalWiki/NeoWiki</a>
-					</p>
-					<p>
-						<i class="fab fa-mastodon icon"></i>
-						<a href="https://mastodon.social/@NeoWiki">@NeoWiki</a>
-					</p>
-					<p>
-						<i class="fab fa-bluesky icon"></i>
-						<a href="https://bsky.app/profile/neowiki.ai">@neowiki.ai</a>
-					</p>
-					<p>
-						<i class="fab fa-x-twitter icon"></i>
-						<a href="https://x.com/NeoWikiAI">@NeoWikiAI</a>
-					</p>
-				</div>
-				<div style="font-size: 0.6em; margin-top: 2.5em; color: var(--slide-muted);">
-					<p style="margin-bottom: 0.3em;">Professional Wiki</p>
-					<p>
-						<a href="https://professional.wiki" style="color: var(--slide-text);">professional.wiki</a>
-						<span style="display: inline-block; width: 0.8em;"></span>
-						<a href="https://www.linkedin.com/company/professional-wiki/"><i class="fab fa-linkedin icon"></i></a>
-						<a href="https://www.linkedin.com/company/professional-wiki/" style="color: var(--slide-text);"> Professional Wiki</a>
-						<span style="display: inline-block; width: 0.8em;"></span>
-						<a href="https://mastodon.social/@ProWiki"><i class="fab fa-mastodon icon"></i></a>
-						<a href="https://mastodon.social/@ProWiki" style="color: var(--slide-text);"> @ProWiki</a>
-						<span style="display: inline-block; width: 0.8em;"></span>
-						<a href="https://bsky.app/profile/professional.wiki"><i class="fab fa-bluesky icon"></i></a>
-						<a href="https://bsky.app/profile/professional.wiki" style="color: var(--slide-text);"> @professional.wiki</a>
-					</p>
-				</div>
-
-				<aside class="notes">
-					<p>
-						Try it on neowiki.dev: create an account and confirm your email to edit. It is a sandbox that resets periodically.
-					</p>
-
-					<p>
-						To run it yourself, install it with Docker or add it to an existing MediaWiki, 1.43 or later.
-						It is still a beta, so not for critical production systems yet.
-					</p>
-
-					<p>
-						If you would rather not run it yourself, we can host a pilot for you.
-					</p>
-				</aside>
-			</section>
-
-			<!-- ==================== BACKUP SLIDES ==================== -->
 			<section>
 				<h2 class="text-5xl font-bold mb-6">NeoWiki vs Bucket</h2>
 				<div class="grid grid-cols-2 gap-[14px] max-w-[960px] mx-auto text-left">
