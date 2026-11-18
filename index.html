@@ -1220,6 +1220,34 @@
 				pwLogo.style.display = isBernhard ? 'none' : '';
 				echolotLogo.style.display = isBernhard ? '' : 'none';
 			});
+
+			// reveal.js keeps the speaker view's window to itself; its "connected" handshake is where the deck learns it.
+			let speakerView = null;
+			const warnSpeakerView = () => {
+				const view = speakerView && !speakerView.closed ? speakerView.document : null;
+				if (!view?.body) return;
+				let warning = view.getElementById('deck-hidden-warning');
+				if (!warning) {
+					warning = view.createElement('div');
+					warning.id = 'deck-hidden-warning';
+					warning.style.cssText = 'position: fixed; inset: 0; z-index: 1000; pointer-events: none; text-align: center;'
+						+ ' border: 12px solid #d32f2f; background: rgba(211, 47, 47, 0.15);';
+					const message = view.createElement('div');
+					message.textContent = 'The audience can’t see the deck. Bring its tab back to the front.';
+					message.style.cssText = 'display: inline-block; padding: 8px 20px 12px; border-radius: 0 0 12px 12px;'
+						+ ' background: #d32f2f; color: #fff; font: bold 28px sans-serif;';
+					warning.appendChild(message);
+					view.body.appendChild(warning);
+				}
+				warning.style.display = document.hidden ? 'block' : 'none';
+			};
+			window.addEventListener('message', event => {
+				if (typeof event.data === 'string' && event.data.includes('"reveal-notes"') && event.data.includes('"connected"')) {
+					speakerView = event.source;
+					warnSpeakerView();
+				}
+			});
+			document.addEventListener('visibilitychange', warnSpeakerView);
 		});
 	</script>
 </body>
